@@ -7,7 +7,18 @@ Pitin 서비스들을 AWS EKS에 배포하기 위한 Kubernetes 매니페스트 
 - **단일 ALB**: 모든 서비스가 하나의 ALB 공유
 - **단일 네임스페이스**: 모든 서비스가 `pitin-service` 네임스페이스에 배포
 - **경로 기반 라우팅**: URL 경로로 서비스 분기 (`/bsms`, `/bsms-dev` 등)
-- **HTTPS**: ACM 인증서를 통한 TLS 종료
+- **HTTPS**: ACM 인증서를 통한 TLS 종료 (ALB에서 SSL 처리)
+
+### TLS 종료 (TLS Termination)
+
+```
+[클라이언트] --HTTPS(암호화)--> [ALB] --HTTP--> [Pod]
+```
+
+- **외부 구간** (클라이언트 ↔ ALB): HTTPS 암호화 통신
+- **내부 구간** (ALB ↔ Pod): HTTP 평문 통신
+
+ALB에서 HTTPS 암호화를 해제(종료)하고, 내부에서는 HTTP로 통신합니다. SSL 인증서는 AWS ACM에서 관리하며, Pod는 암호화 처리 부담 없이 HTTP만 처리합니다.
 
 ## 디렉토리 구조
 
